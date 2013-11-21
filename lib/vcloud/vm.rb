@@ -101,11 +101,12 @@ module Vcloud
     def generate_preamble(script_path, vars)
       vapp_name = vapp.name
       script = ERB.new(File.read(script_path), nil, '>-').result(binding)
-      # vCloud can only handle preamble scripts < 2048 bytes
-      if script.bytesize >= 2048 
-        script = Open3.capture2(minifier_tool_location, stdin_data: script).first
-      end
-      script
+      # Preamble scripts can be up to 8192 bytes but must be < ~2048 bytes to
+      # avoid decoding errors during guest customization under Linux (and maybe
+      # others).
+      # TODO: ensure the preamble script is actually a shell script and/or
+      #       that the guest is running Linux.
+      Open3.capture2(minifier_tool_location, stdin_data: script).first
     end
 
     def virtual_hardware_section
