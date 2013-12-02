@@ -27,13 +27,13 @@ module Vcloud
         @options[:page] = 1
         begin
           begin
-            response = @fsi.get_execute_query(type=type, @options)
+            results = @fsi.get_execute_query(type=type, @options)
           rescue Fog::Compute::VcloudDirector::BadRequest, Fog::Compute::VcloudDirector::Forbidden => e
             Kernel.abort("#{File.basename($0)}: #{e.message}")
           end
 
-          break unless output_response(response.body)
-          @options[:page] = response.body[:nextPage]
+          break unless output_results(results)
+          @options[:page] = results[:nextPage]
 
         end until @options[:page].nil?
 
@@ -41,7 +41,7 @@ module Vcloud
 
     def get_and_output_potential_query_types
 
-      query_list = @fsi.get_execute_query.body
+      query_list = @fsi.get_execute_query
       queries = {}
       type_width = 0
       query_list[:Link].select do |link|
@@ -61,7 +61,7 @@ module Vcloud
 
     end
 
-    def output_response(body)
+    def output_results(body)
 
       records = body.keys.detect {|key| key.to_s =~ /Record|Reference$/}
       return nil if body[records].nil? || body[records].empty?
@@ -93,5 +93,4 @@ module Vcloud
 
   end
 end
-
 

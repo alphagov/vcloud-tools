@@ -120,7 +120,7 @@ module Vcloud
     end
 
     def get_execute_query(type=nil, options={})
-      @vcloud.get_execute_query(type, options)
+      @vcloud.get_execute_query(type, options).body
     end
 
     def get_vapp_metadata_hash(id)
