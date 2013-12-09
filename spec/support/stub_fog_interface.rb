@@ -28,7 +28,7 @@ class StubFogInterface
   end
 
   def vdc(name)
-    { }
+    { :href => '/12345678-90ab-cdef-0123-456789002354' }
   end
 
   def post_instantiate_vapp_template(vdc, template, name, params)
