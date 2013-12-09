@@ -186,7 +186,21 @@ module Vcloud
       @vcloud.end_point
     end
 
+    def post_create_org_vdc_network(vdc_id, name, options)
+      unless available_in_fog?(:post_create_org_vdc_network)
+        raise "post_create_org_vdc_network not yet implemented in Fog version."
+      end
+      Vcloud.logger.info("creating #{options[:fence_mode]} OrgVdcNetwork #{name} in vDC #{vdc_id}")
+      task = @vcloud.post_create_org_vdc_network(vdc_id, name, options).body
+      @vcloud.process_task(task)
+    end
+
     private
+
+    def available_in_fog?(method)
+      @vcloud.methods.include?(method)
+    end
+
     def extract_id(link)
       link[:href].split('/').last
     end

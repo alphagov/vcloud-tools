@@ -27,8 +27,20 @@ class StubFogInterface
     { :name => 'test-vapp-1' }
   end
 
+  def get_execute_query(type, options)
+    if type == 'orgVdcNetwork' && options[:filter] == 'name==test-net-1'
+      return stub_return_single_record(
+        :type => type,
+        :name => name,
+        :href => "/12345678-1234-1234-000005000000",
+      )
+    else
+      return nil
+    end
+  end
+
   def vdc(name)
-    { }
+    { :href => '/12345678-90ab-cdef-0123-456789002354' }
   end
 
   def post_instantiate_vapp_template(vdc, template, name, params)
@@ -48,5 +60,18 @@ class StubFogInterface
     { :href => '/vappTemplate-12345678-90ab-cdef-0123-4567890abcde' }
   end
 
+  def post_create_org_vdc_network(vdc_id, name, options)
+    return
+  end
+
+  private
+
+  def stub_return_single_record(options)
+     { :TestRecord=>
+       [{:name=>options[:name],
+         :href=>options[:href],
+       }]
+     }
+  end
 
 end
