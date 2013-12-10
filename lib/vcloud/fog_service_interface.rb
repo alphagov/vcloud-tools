@@ -28,6 +28,9 @@ module Vcloud
       link = org[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
         l[:type] == Vcloud::ContentTypes::VDC && l[:name] == name
       end
+      unless link
+        raise "Could not find vDC #{name}"
+      end
       @vcloud.get_vdc(link[:href].split('/').last).body
     end
 
