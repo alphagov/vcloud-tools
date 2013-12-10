@@ -50,6 +50,11 @@ module Vcloud
 
     end
 
+    def delete
+      fsi = Vcloud::FogServiceInterface.new
+      fsi.delete_network(id)
+    end
+
     private
 
     def self.construct_network_options(config)

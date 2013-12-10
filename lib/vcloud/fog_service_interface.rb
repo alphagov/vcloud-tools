@@ -189,6 +189,15 @@ module Vcloud
       @vcloud.end_point
     end
 
+    def delete_network(id)
+      unless available_in_fog?(:delete_network)
+        raise "delete_network not yet implemented in Fog version."
+      end
+      Vcloud.logger.info("deleting OrgVdcNetwork #{id}")
+      task = @vcloud.delete_network(id).body
+      @vcloud.process_task(task)
+    end
+
     def post_create_org_vdc_network(vdc_id, name, options)
       unless available_in_fog?(:post_create_org_vdc_network)
         raise "post_create_org_vdc_network not yet implemented in Fog version."
@@ -198,11 +207,11 @@ module Vcloud
       @vcloud.process_task(body[:Tasks][:Task])
     end
 
-    private
-
     def available_in_fog?(method)
       @vcloud.methods.include?(method)
     end
+
+    private
 
     def extract_id(link)
       link[:href].split('/').last
