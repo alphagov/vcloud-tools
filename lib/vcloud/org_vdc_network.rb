@@ -1,6 +1,8 @@
 module Vcloud
   class OrgVdcNetwork
 
+    attr_reader :id
+
     def initialize(id)
       @id = id
     end
@@ -29,6 +31,10 @@ module Vcloud
         raise "fence_mode #{config[:fence_mode]} not supported"
       end
 
+      unless config[:is_shared]
+        config[:is_shared] = false
+      end
+
       vdc = Vcloud::Vdc.get_by_name(vdc_name)
 
       options = construct_network_options(config)
@@ -40,17 +46,34 @@ module Vcloud
         Vcloud.logger.error("Could not provision orgVdcNetwork: #{e.message}")
       end
 
-      org_net = self.get_by_name(name)
+      self.get_by_name(name)
 
     end
 
     private
 
     def self.construct_network_options(config)
-      opts = {
-        :IsShared => config[:is_shared],
+      opts = {}
+      opts[:Description] = config[:description] if config.key?(:description)
+      opts[:IsShared] = config[:is_shared]
+
+      ip_scope = {}
+      ip_scope[:IsInherited] = config[:is_inherited] || false
+      ip_scope[:Gateway]     = config[:gateway] if config.key?(:gateway)
+      ip_scope[:Netmask]     = config[:netmask] if config.key?(:netmask)
+      ip_scope[:Dns1]        = config[:dns1] if config.key?(:dns1)
+      ip_scope[:Dns2]        = config[:dns2] if config.key?(:dns2)
+      ip_scope[:DnsSuffix]   = config[:dns_suffix] if config.key?(:dns_suffix)
+      ip_scope[:IsEnabled]   = config[:is_enabled] || true
+
+      opts[:Configuration] = {
         :FenceMode => config[:fence_mode],
+        :IpScopes => {
+          :IpScope => ip_scope
+        },
       }
+
+      opts
     end
 
   end

@@ -194,8 +194,8 @@ module Vcloud
         raise "post_create_org_vdc_network not yet implemented in Fog version."
       end
       Vcloud.logger.info("creating #{options[:fence_mode]} OrgVdcNetwork #{name} in vDC #{vdc_id}")
-      task = @vcloud.post_create_org_vdc_network(vdc_id, name, options).body
-      @vcloud.process_task(task)
+      body = @vcloud.post_create_org_vdc_network(vdc_id, name, options).body
+      @vcloud.process_task(body[:Tasks][:Task])
     end
 
     private
