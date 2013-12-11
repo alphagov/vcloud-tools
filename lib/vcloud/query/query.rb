@@ -1,4 +1,4 @@
-require 'vcloud'
+require 'vcloud/core'
 
 module Vcloud
   class Query

@@ -5,7 +5,8 @@ require 'bundler/setup'
 require 'optparse'
 require 'methadone'
 
-require 'vcloud'
+require 'vcloud/core'
+require 'vcloud/query/query'
 
 class App
 
