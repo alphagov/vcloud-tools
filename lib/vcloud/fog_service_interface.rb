@@ -21,6 +21,7 @@ module Vcloud
       link = org[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
         l[:type] == Vcloud::ContentTypes::CATALOG && l[:name] == name
       end
+      return nil unless link
       @vcloud.get_catalog(extract_id(link)).body
     end
 
