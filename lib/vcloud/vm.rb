@@ -17,6 +17,11 @@ module Vcloud
       end
     end
 
+    def metadata
+      fog_interface = Vcloud::FogServiceInterface.new
+      Vcloud.extract_metadata(fog_interface.get_vapp_metadata(id))
+    end
+
     def memory
       memory_item = virtual_hardware_section.detect { |i| i[:'rasd:ResourceType'] == '4' }
       memory_item[:'rasd:VirtualQuantity']

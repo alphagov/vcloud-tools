@@ -123,8 +123,8 @@ module Vcloud
       @vcloud.get_execute_query(type, options).body
     end
 
-    def get_vapp_metadata_hash(id)
-      Vcloud.extract_metadata(@vcloud.get_vapp_metadata(id).body[:MetadataEntry])
+    def get_vapp_metadata(id)
+      @vcloud.get_vapp_metadata(id).body[:MetadataEntry]
     end
 
     def get_vapp_metadata_by_key(id, key)
