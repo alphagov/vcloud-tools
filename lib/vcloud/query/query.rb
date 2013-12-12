@@ -10,7 +10,7 @@ module Vcloud
       @type = type
       @options = options
       @options[:output_format] ||= 'tsv'
-      @fsi = FogServiceInterface.new
+      @fsi = Fog::ServiceInterface.new
     end
 
     def filter

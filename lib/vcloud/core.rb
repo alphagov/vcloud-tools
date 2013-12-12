@@ -1,8 +1,6 @@
-require 'vcloud/core/content_types'
+require 'vcloud/fog'
+
 require 'vcloud/core/entity'
-require 'vcloud/core/relation'
-require 'vcloud/core/fog_service_interface'
-require 'vcloud/core/fog_model_interface'
 require 'vcloud/core/vapp'
 require 'vcloud/core/vm'
 require 'vcloud/core/vapp_template'
