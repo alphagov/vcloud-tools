@@ -1,26 +1,26 @@
 module Vcloud
 
   module Fog
-    class FogServiceInterface
+    class ServiceInterface
       def initialize
-        @vcloud = Fog::Compute::VcloudDirector.new
+        @vcloud = ::Fog::Compute::VcloudDirector.new
       end
 
       def org
-        link = session[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
-          l[:type] == Vcloud::ContentTypes::ORG
+        link = session[:Link].select { |l| l[:rel] == RELATION::CHILD }.detect do |l|
+          l[:type] == ContentTypes::ORG
         end
         @vcloud.get_organization(link[:href].split('/').last).body
       end
 
       def get_vapp_by_name_and_vdc_name name, vdc_name
         response = @vcloud.get_vapps_in_lease_from_query({:filter => "name==#{name}"})
-        response.body[:VAppRecord].detect{|record| record[:vdcName] == vdc_name}
+        response.body[:VAppRecord].detect { |record| record[:vdcName] == vdc_name }
       end
 
       def catalog(name)
-        link = org[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
-          l[:type] == Vcloud::ContentTypes::CATALOG && l[:name] == name
+        link = org[:Link].select { |l| l[:rel] == RELATION::CHILD }.detect do |l|
+          l[:type] == ContentTypes::CATALOG && l[:name] == name
         end
         @vcloud.get_catalog(extract_id(link)).body
       end
@@ -37,7 +37,7 @@ module Vcloud
 
       def template(catalog_name, template_name)
         link = catalog(catalog_name)[:CatalogItems][:CatalogItem].detect do |l|
-          l[:type] == Vcloud::ContentTypes::CATALOG_ITEM && l[:name].match(template_name)
+          l[:type] == ContentTypes::CATALOG_ITEM && l[:name].match(template_name)
         end
         if link.nil?
           Vcloud.logger.warn("Template #{template_name} not found in catalog #{catalog_name}")
@@ -118,7 +118,7 @@ module Vcloud
       def find_networks(network_names, vdc_name)
         network_names.collect do |network|
           vdc(vdc_name)[:AvailableNetworks][:Network].detect do |l|
-            l[:type] == Vcloud::ContentTypes::NETWORK && l[:name] == network
+            l[:type] == ContentTypes::NETWORK && l[:name] == network
           end
         end
       end

@@ -2,7 +2,7 @@ module Vcloud
   module Fog
     class ModelInterface
       def initialize
-        @vcloud = Fog::Compute::VcloudDirector.new
+        @vcloud = ::Fog::Compute::VcloudDirector.new
       end
 
       def org_name
@@ -14,7 +14,7 @@ module Vcloud
       end
 
       def current_vdc vdc_id
-        current_organization.vdcs.detect {|v| v.id == vdc_id }
+        current_organization.vdcs.detect { |v| v.id == vdc_id }
       end
 
       def get_vm_by_href href
