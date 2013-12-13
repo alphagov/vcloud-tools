@@ -11,7 +11,7 @@ module Vcloud
       @options = options
       @options[:output_format] ||= 'tsv'
       Fog.mock! if @options[:mock] || ENV['FOG_MOCK']
-      @fsi = FogServiceInterface.new
+      @fsi = Vcloud::Fog::ServiceInterface.new
     end
 
     def filter

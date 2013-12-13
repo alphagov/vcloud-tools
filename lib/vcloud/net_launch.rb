@@ -17,7 +17,7 @@ module Vcloud
       config = @config_loader.load_config(config_file)
 
       if @cli_options[:mock] || ENV['FOG_MOCK']
-        Fog.mock!
+        ::Fog.mock!
       end
 
       config[:org_vdc_networks].each do |net_config|

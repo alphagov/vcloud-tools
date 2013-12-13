@@ -26,8 +26,8 @@ module Vcloud
       end
 
       def vdc(name)
-        link = org[:Link].select { |l| l[:rel] == Vcloud::RELATION::CHILD }.detect do |l|
-          l[:type] == Vcloud::ContentTypes::VDC && l[:name] == name
+        link = org[:Link].select { |l| l[:rel] == RELATION::CHILD }.detect do |l|
+          l[:type] == ContentTypes::VDC && l[:name] == name
         end
         unless link
           raise "Could not find vDC #{name}"

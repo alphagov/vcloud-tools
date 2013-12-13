@@ -5,7 +5,7 @@ module Vcloud
 
     def self.get_by_name(name)
 
-      fsi = Vcloud::FogServiceInterface.new
+      fsi = Vcloud::Fog::ServiceInterface.new
       unless body = fsi.vdc(name)
         raise "Could not find vDC named '#{name}'"
       end

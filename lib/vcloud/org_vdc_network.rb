@@ -23,7 +23,7 @@ module Vcloud
     end
 
     def self.provision(config)
-      fsi = Vcloud::FogServiceInterface.new
+      fsi = Vcloud::Fog::ServiceInterface.new
       raise "Must specify a name" unless name = config[:name]
       raise "Must specify a vdc_name" unless vdc_name = config[:vdc_name]
 
@@ -51,7 +51,7 @@ module Vcloud
     end
 
     def delete
-      fsi = Vcloud::FogServiceInterface.new
+      fsi = Vcloud::Fog::ServiceInterface.new
       fsi.delete_network(id)
     end
 

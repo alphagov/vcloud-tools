@@ -6,7 +6,7 @@ module Vcloud
 
     before (:each) do
       @mock_fog_interface = StubFogInterface.new
-      Vcloud::FogServiceInterface.stub(:new).and_return(@mock_fog_interface)
+      Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
     end
 
     context "#initialize" do
