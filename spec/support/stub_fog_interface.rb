@@ -34,6 +34,12 @@ class StubFogInterface
         :name => name,
         :href => "/12345678-1234-1234-000005000000",
       )
+    elsif type == 'edgeGateway' && options[:filter] == 'name==test-edgegw-1'
+      return stub_return_single_record(
+        :type => type,
+        :name => name,
+        :href => "/12345678-1234-1234-000006000000",
+      )
     else
       return nil
     end

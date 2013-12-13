@@ -18,6 +18,7 @@ require 'vcloud/vm'
 require 'vcloud/config_loader'
 require 'vcloud/vapp_template'
 require 'vcloud/org_vdc_network'
+require 'vcloud/edge_gateway'
 require 'vcloud/vdc'
 
 module Vcloud

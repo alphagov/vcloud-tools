@@ -68,6 +68,10 @@ module Vcloud
         @vcloud.get_vapp(id).body
       end
 
+      def get_edge_gateway(id)
+        @vcloud.get_edge_gateway(id).body
+      end
+
       def put_cpu(vm_id, cpu)
         Vcloud.logger.info("putting #{cpu} CPU(s) into VM #{vm_id}")
         task = @vcloud.put_cpu(vm_id, cpu).body

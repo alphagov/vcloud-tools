@@ -35,6 +35,11 @@ module Vcloud
         config[:is_shared] = false
       end
 
+      if config[:fence_mode] == 'natRouted'
+        raise "Must specify an edge_gateway to connect to" unless config.keys?(:edge_gateway)
+        edgegw = Vcloud::EdgeGateway.get_by_name(config[:edge_gateway])
+      end
+
       vdc = Vcloud::Vdc.get_by_name(vdc_name)
 
       options = construct_network_options(config)
