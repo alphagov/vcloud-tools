@@ -37,8 +37,8 @@ module Vcloud
         end
 
         if config[:fence_mode] == 'natRouted'
-          raise "Must specify an edge_gateway to connect to" unless config.keys?(:edge_gateway)
-          edgegw = Vcloud::EdgeGateway.get_by_name(config[:edge_gateway])
+          raise "Must specify an edge_gateway to connect to" unless config.key?(:edge_gateway)
+          edgegw = Vcloud::Core::EdgeGateway.get_by_name(config[:edge_gateway])
         end
 
         vdc = Vcloud::Core::Vdc.get_by_name(vdc_name)
