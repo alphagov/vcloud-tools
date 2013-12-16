@@ -28,8 +28,8 @@ module Vcloud
 
     def run()
 
-      puts "options:" if @options[:debug]
-      pp @options if @options[:debug]
+      puts "options:" if options[:debug]
+      pp options if options[:debug]
 
       if @type.nil?
         output_potential_query_types
@@ -68,14 +68,34 @@ module Vcloud
       records = body.keys.detect {|key| key.to_s =~ /Record|Reference$/}
       body[records] = [body[records]] if body[records].is_a?(Hash)
       return nil if body[records].nil? || body[records].empty?
-      body[records]
 
+      ret = []
+      body[records].each do |record|
+        ret << process_record(record)
+      end
+      ret
+
+    end
+
+    def process_record(record)
+      raise "invalid record -- must be a hash" unless record.is_a?(Hash)
+      if record.key?(:Metadata) && record[:Metadata].key?(:MetadataEntry)
+        md = Vcloud.extract_metadata(record[:Metadata][:MetadataEntry])
+        record.delete(:Metadata)
+        md.each do |k, v|
+          # query engine likes metadata specified as metadata:{key}
+          record["metadata:#{k.to_s}".to_sym] = v
+        end
+      end
+      record
     end
 
     def output_query_results
       results = get_all_results
-      output_header(results)
-      output_results(results)
+      if results.size > 0
+        output_header(all_keys(results.first))
+        output_results(results)
+      end
     end
 
     def output_potential_query_types
@@ -100,16 +120,22 @@ module Vcloud
 
     end
 
-    def output_header(results)
-      return if results.size == 0
+    def all_keys(record)
+      return record.keys if fields.nil?
+      keys = fields.split(',')
+      keys.map { |k| k.to_sym }
+    end
+
+    def output_header(header_fields)
+
       case @options[:output_format]
       when 'csv'
         csv_string = CSV.generate do |csv|
-          csv << results.first.keys
+          csv << header_fields
         end
         puts csv_string
       when 'tsv'
-        puts results.first.keys.join("\t")
+        puts header_fields.join("\t")
       end
     end
 
@@ -122,14 +148,13 @@ module Vcloud
       when 'csv'
         csv_string = CSV.generate do |csv|
           results.each do |record|
-            csv << record.values
+            csv << all_keys(record).map { |k| record[k] }
           end
         end
         puts csv_string
       when 'tsv'
-        puts results.first.keys.join("\t") if @options[:page] == 1
         results.each do |record|
-          puts record.values.join("\t")
+          puts all_keys(record).map { |k| record[k] }.join("\t")
         end
       else
         raise "Unsupported output format #{@options[:output_format]}"

@@ -25,6 +25,11 @@ module Vcloud
         @vcloud_attributes[:Children][:Vm]
       end
 
+      def metadata
+        fog_interface = Vcloud::Fog::ServiceInterface.new
+        Vcloud.extract_metadata(fog_interface.get_vapp_metadata(id))
+      end
+
       def networks
         @vcloud_attributes[:'ovf:NetworkSection'][:'ovf:Network']
       end
