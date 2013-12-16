@@ -1,11 +1,10 @@
 require 'spec_helper'
 require 'pp'
 
-describe Vcloud::OrgVdcNetwork do
-
+describe Vcloud::Core::OrgVdcNetwork do
 
   before(:all) do
-    @fsi = Vcloud::FogServiceInterface.new
+    @fsi = Vcloud::Fog::ServiceInterface.new
 
     TEST_VDC      = ENV['VCLOUD_TEST_VDC']      || 'Test vDC'
 
@@ -22,12 +21,11 @@ describe Vcloud::OrgVdcNetwork do
       :dns2 => '8.8.4.4',
     }
 
-
   end
 
   it 'should have been provisioned correctly' do
     pending("Not yet implemented in Fog version") unless @fsi.available_in_fog?(:post_create_org_vdc_network)
-    @net = Vcloud::OrgVdcNetwork.provision(@config)
+    @net = Vcloud::Core::OrgVdcNetwork.provision(@config)
     expect(@net.id).to match(/^[0-9a-f-]+$/)
   end
 
