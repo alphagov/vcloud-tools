@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
-require 'fog'
 require 'json'
 require 'yaml'
 require 'csv'
@@ -8,18 +7,13 @@ require 'open3'
 require 'pp'
 
 require 'vcloud/version'
-require 'vcloud/entity'
+
+require 'vcloud/fog'
+require 'vcloud/core'
+
+require 'vcloud/config_loader'
 require 'vcloud/launch'
 require 'vcloud/query'
-require 'vcloud/content_types'
-require 'vcloud/relation'
-require 'vcloud/fog_service_interface'
-require 'vcloud/fog_model_interface'
-require 'vcloud/vm_orchestrator'
-require 'vcloud/vapp'
-require 'vcloud/vm'
-require 'vcloud/config_loader'
-require 'vcloud/vapp_template'
 
 module Vcloud
 
