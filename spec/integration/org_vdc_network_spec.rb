@@ -19,6 +19,12 @@ describe Vcloud::Core::OrgVdcNetwork do
       :netmask => '255.255.255.0',
       :dns1 => '8.8.8.8',
       :dns2 => '8.8.4.4',
+      :ip_ranges => [
+          { :start_address => '10.88.10.100',
+            :end_address   => '10.88.10.150' },
+          { :start_address => '10.88.10.200',
+            :end_address   => '10.88.10.250' },
+        ],
     }
 
   end
