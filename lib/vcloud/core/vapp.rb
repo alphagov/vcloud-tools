@@ -1,6 +1,7 @@
 module Vcloud
   module Core
     class Vapp < Entity
+      extend ComputeMetadata
 
       attr_reader :vcloud_attributes
 
@@ -76,8 +77,8 @@ module Vcloud
       end
 
       def build_network_config(networks)
-        instantiation = {NetworkConfigSection: {NetworkConfig: []}}
-        return instantiation unless networks
+        return {} unless networks
+        instantiation = { NetworkConfigSection: {NetworkConfig: []} }
         networks.compact.each do |network|
           instantiation[:NetworkConfigSection][:NetworkConfig] << {
               networkName: network[:name],
