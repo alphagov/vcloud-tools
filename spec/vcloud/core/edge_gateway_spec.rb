@@ -5,8 +5,21 @@ module Vcloud
   describe Vcloud::Core::EdgeGateway do
 
     before (:each) do
+      @edge_id = '12345678-1234-1234-1234-000000111111'
       @mock_fog_interface = StubFogInterface.new
       Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
+    end
+
+    context "Class public interface" do
+      it { Vcloud::Core::EdgeGateway.should respond_to(:get_by_name) }
+    end
+
+    context "Object public interface" do
+      subject { Vcloud::Core::EdgeGateway.new(@edge_id) }
+      it { should respond_to(:id) }
+      it { should respond_to(:vcloud_attributes) }
+      it { should respond_to(:name) }
+      it { should respond_to(:href) }
     end
 
     context "#initialize" do

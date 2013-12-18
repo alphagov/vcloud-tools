@@ -23,9 +23,17 @@ module Vcloud
         end
       end
 
-      def body
+      def vcloud_attributes
         fsi = Vcloud::Fog::ServiceInterface.new
         fsi.get_edge_gateway(id)
+      end
+
+      def href
+        vcloud_attributes[:href]
+      end
+
+      def name
+        vcloud_attributes[:name]
       end
 
     end
