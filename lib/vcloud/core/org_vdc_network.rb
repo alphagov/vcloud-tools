@@ -77,7 +77,7 @@ module Vcloud
         ip_scope[:DnsSuffix]   = config[:dns_suffix] if config.key?(:dns_suffix)
         ip_scope[:IsEnabled]   = config[:is_enabled] || true
 
-        if config[:ip_ranges].size > 0
+        if config.key?(:ip_ranges) && config[:ip_ranges].size > 0
           ip_scope[:IpRanges] = []
           config[:ip_ranges].each do |range|
             ip_scope[:IpRanges] << { 
