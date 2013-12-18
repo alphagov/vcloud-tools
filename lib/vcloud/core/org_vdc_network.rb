@@ -80,7 +80,17 @@ module Vcloud
         if config.key?(:ip_ranges) && config[:ip_ranges].size > 0
           ip_scope[:IpRanges] = []
           config[:ip_ranges].each do |range|
-            ip_scope[:IpRanges] << { 
+            # TODO
+            # MP: This code is awaiting a fix to fog in 
+            #     https://github.com/alphagov/fog/commit/a4320f32ce62273ea46933b769ad746ec32c7a6a
+            #ip_scope[:IpRanges] << {
+            #  :IpRange => {
+            #    :StartAddress => range[:start_address],
+            #    :EndAddress   => range[:end_address]
+            #  }
+            #}
+            # For now, work against the broken behaviour:
+            ip_scope[:IpRanges] << {
               :StartAddress => range[:start_address],
               :EndAddress   => range[:end_address],
             }
