@@ -146,7 +146,7 @@ module Vcloud
                   ]
                 }
               }
-            }
+            },
           }
           @mock_fog_interface.should_receive(:post_create_org_vdc_network).
               with(@vdc_id, @config[:name], expected_vcloud_attrs)
@@ -186,6 +186,7 @@ module Vcloud
                 }
               }
             },
+            :EdgeGateway => { :href => '/test-edgegw-1' },
           }
           @mock_fog_interface.should_receive(:post_create_org_vdc_network).
               with(@vdc_id, @config[:name], expected_vcloud_attrs)
