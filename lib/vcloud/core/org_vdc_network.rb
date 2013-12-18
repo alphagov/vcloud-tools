@@ -44,6 +44,9 @@ module Vcloud
         vdc = Vcloud::Core::Vdc.get_by_name(vdc_name)
 
         options = construct_network_options(config)
+        if edgegw
+          options[:EdgeGateway] = { :href => edgegw.href }
+        end
 
         begin
           Vcloud.logger.info("Provisioning new OrgVdcNetwork #{name} in vDC '#{vdc_name}'")
