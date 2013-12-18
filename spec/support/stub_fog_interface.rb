@@ -27,6 +27,13 @@ class StubFogInterface
     { :name => 'test-vapp-1' }
   end
 
+  def get_edge_gateway(id)
+    {
+      :href => '/test-edgegw-1',
+      :name => 'test-edgegw-1',
+    }
+  end
+
   def get_execute_query(type, options)
     if type == 'orgVdcNetwork' && options[:filter] == 'name==test-net-1'
       return stub_return_single_record(
