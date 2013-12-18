@@ -7,5 +7,5 @@ if ENV['VCLOUD_TOOLS_DEV_FOG_MASTER']
 elsif ENV['VCLOUD_TOOLS_DEV_FOG_LOCAL']
   gem 'fog', :path => '../fog'
 else
-  gem 'fog', :git => 'git@github.com:fog/fog.git', :branch => '61cd05f6954fa17fceb05f0bd0e0e41f249babc9'
+  gem 'fog', :git => 'git@github.com:fog/fog.git', :branch => '20d4c2a2591b482ef21025ed1fec7cf559436921'
 end
