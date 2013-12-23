@@ -1,0 +1,16 @@
+---
+org_vdc_networks:
+
+- name: net-routed-1
+  vdc_name: MockVDC 1
+  fence_mode: natRouted
+
+- name: net-isolated-1
+  vdc_name: MockVDC 1
+  is_shared: true
+
+- name: net-isolated-2
+  vdc_name: MockVDC 2
+
+- name: net-isolated-3
+  vdc_name: MockVDC 1

@@ -7,7 +7,8 @@ require 'open3'
 require 'pp'
 
 require 'vcloud/version'
-
+require 'vcloud/net_launch'
+require 'vcloud/query'
 require 'vcloud/fog'
 require 'vcloud/core'
 

@@ -1,4 +1,5 @@
 module Vcloud
+
   module Fog
     class ServiceInterface
       def initialize
@@ -27,6 +28,9 @@ module Vcloud
       def vdc(name)
         link = org[:Link].select { |l| l[:rel] == RELATION::CHILD }.detect do |l|
           l[:type] == ContentTypes::VDC && l[:name] == name
+        end
+        unless link
+          raise "Could not find vDC #{name}"
         end
         @vcloud.get_vdc(link[:href].split('/').last).body
       end
@@ -62,6 +66,10 @@ module Vcloud
 
       def get_vapp(id)
         @vcloud.get_vapp(id).body
+      end
+
+      def get_edge_gateway(id)
+        @vcloud.get_edge_gateway(id).body
       end
 
       def put_cpu(vm_id, cpu)
@@ -169,7 +177,30 @@ module Vcloud
         @vcloud.end_point
       end
 
+      def delete_network(id)
+        unless available_in_fog?(:delete_network)
+          raise "delete_network not yet implemented in Fog version."
+        end
+        Vcloud.logger.info("deleting OrgVdcNetwork #{id}")
+        task = @vcloud.delete_network(id).body
+        @vcloud.process_task(task)
+      end
+
+      def post_create_org_vdc_network(vdc_id, name, options)
+        unless available_in_fog?(:post_create_org_vdc_network)
+          raise "post_create_org_vdc_network not yet implemented in Fog version."
+        end
+        Vcloud.logger.info("creating #{options[:fence_mode]} OrgVdcNetwork #{name} in vDC #{vdc_id}")
+        body = @vcloud.post_create_org_vdc_network(vdc_id, name, options).body
+        @vcloud.process_task(body[:Tasks][:Task])
+      end
+
+      def available_in_fog?(method)
+        @vcloud.methods.include?(method)
+      end
+
       private
+
       def extract_id(link)
         link[:href].split('/').last
       end
@@ -178,4 +209,3 @@ module Vcloud
 
   end
 end
-
