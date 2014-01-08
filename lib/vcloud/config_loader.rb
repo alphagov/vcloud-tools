@@ -8,7 +8,7 @@ module Vcloud
 
       # There is no way in YAML or Ruby to symbolize keys in a hash
       json_string = JSON.generate(config)
-      JSON.parse(json_string, :symbolize_names => true)
+      validate_config(JSON.parse(json_string, :symbolize_names => true))
     end
 
     def validate_config(config)
