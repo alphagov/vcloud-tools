@@ -9,69 +9,6 @@ module Vcloud
       Vcloud::Fog::ServiceInterface.stub(:new).and_return(@mock_fog_interface)
     end
 
-    context "#validate_vapp_config" do
-      before(:each) do 
-        @pre = 'validate_vapp_config'
-        @basic_config = {
-          name:     "test-vapp-1",
-          vdc_name: "Test vDC1",
-          catalog:  'org-1-catalog',
-          catalog_item: 'org-1-template',
-        }
-        @full_config = @basic_config.merge({
-          vm: {
-            network_connections: [
-              { name: 'org-vdc-1-net-1' }
-            ]
-          }
-        })
-      end
-
-      it "should raise an error if nil is provided" do
-        vapp_config = nil
-        expect { VappOrchestrator.validate_vapp_config(vapp_config) }.
-          to raise_error("#{@pre}: config cannot be nil")
-      end
-
-      it "should raise an error if empty hash is provided" do
-        vapp_config = {}
-        expect { VappOrchestrator.validate_vapp_config(vapp_config) }.
-          to raise_error("#{@pre}: config cannot be empty")
-      end
-
-      it "should raise an error if input is not a Hash" do
-        vapp_config = []
-        expect { VappOrchestrator.validate_vapp_config(vapp_config) }.
-          to raise_error("#{@pre}: config must be a parameter hash")
-      end
-
-      ['name', 'vdc_name', 'catalog', 'catalog_item'].each do |p|
-        it "should raise an error if #{p} is not specified" do
-          @basic_config.delete(p.to_sym)
-          expect { VappOrchestrator.validate_vapp_config(@basic_config) }.
-            to raise_error("#{@pre}: #{p} must be specified")
-        end
-      end
-
-      it "should not raise an error if no vm is specified" do
-        expect { VappOrchestrator.validate_vapp_config(@basic_config) }.
-          to be_true
-      end
-
-      it "should raise an error if an empty vm is specified" do
-        @basic_config[:vm] = {}
-        expect { VappOrchestrator.validate_vapp_config(@basic_config) }.
-          to raise_error("#{@pre}: vm config must not be empty")
-      end
-
-      it "should raise an error if vm config is not a hash" do
-        @basic_config[:vm] = []
-        expect { VappOrchestrator.validate_vapp_config(@basic_config) }.
-          to raise_error("#{@pre}: vm config must be a hash")
-      end
-
-    end
-
     context "provision a vapp" do
 
       before(:each) do
