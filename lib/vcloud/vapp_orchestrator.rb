@@ -22,6 +22,25 @@ module Vcloud
       vapp
     end
 
+    def self.validate_vapp_config(config)
+      pre = 'validate_vapp_config'
+      raise "#{pre}: config cannot be nil" if config.nil?
+      raise "#{pre}: config must be a parameter hash" unless config.is_a? Hash
+      raise "#{pre}: config cannot be empty" if config.empty?
+      [ 'name', 'vdc_name', 'catalog', 'catalog_item'].each do |p|
+        unless config.key?(p.to_sym) && ! config[p.to_sym].empty?
+          raise "#{pre}: #{p} must be specified" unless config.key?(p.to_sym)
+        end
+      end
+      if config.key?(:vm)
+        vm_config = config[:vm]
+        raise "#{pre}: vm config must be a hash" unless vm_config.is_a? Hash
+        raise "#{pre}: vm config must not be empty" if vm_config.empty?
+      end
+
+      true
+    end
+
     def self.extract_vm_networks(config)
       if (config[:vm] && config[:vm][:network_connections])
         config[:vm][:network_connections].collect { |h| h[:name] }
