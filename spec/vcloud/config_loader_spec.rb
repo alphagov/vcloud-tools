@@ -142,6 +142,11 @@ module Vcloud
         @cl.validate_vm_config( { metadata: 'wibble1' } )
       end
 
+      it "should pass hardware_config section to validate_vm_hardware_config" do
+        @cl.should_receive(:validate_vm_hardware_config).with('wibble1')
+        @cl.validate_vm_config( { hardware_config: 'wibble1' } )
+      end
+
     end
 
     context "#validate_metadata_config" do
@@ -153,6 +158,24 @@ module Vcloud
       it "should raise an error if metadata is not a hash" do
         expect { @cl.validate_metadata_config([]) }.
           to raise_error("#{@pre}: metadata config must be a hash")
+      end
+
+    end
+
+    context "#validate_vm_hardware_config" do
+      before(:each) do
+        @cl = ConfigLoader.new
+        @pre = 'ConfigLoader.validate_vm_hardware_config'
+      end
+
+      it "should raise an error if hardware_config is not a hash" do
+        expect { @cl.validate_vm_hardware_config([]) }.
+          to raise_error("#{@pre}: vm hardware_config must be a hash")
+      end
+
+      it "should raise an error if an unexpected parameter is provided" do
+        expect { @cl.validate_vm_hardware_config({ bogus: true }) }.
+          to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
       end
 
     end

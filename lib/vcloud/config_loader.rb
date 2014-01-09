@@ -87,12 +87,28 @@ module Vcloud
         end
       end
       validate_metadata_config(config[:metadata]) if config.key?(:metadata)
+      validate_vm_hardware_config(config[:hardware_config]) if config.key?(:hardware_config)
       config
     end
 
     def validate_metadata_config(config)
       pre = 'ConfigLoader.validate_metadata_config'
       raise "#{pre}: metadata config must be a hash" unless config.is_a? Hash
+      config
+    end
+
+    def validate_vm_hardware_config(config)
+      pre = 'ConfigLoader.validate_vm_hardware_config'
+      raise "#{pre}: vm hardware_config must be a hash" unless config.is_a? Hash
+      valid_parameters = [
+        :cpu,
+        :memory,
+      ]
+      config.each do |k,v|
+        unless valid_parameters.include?(k)
+          raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
+        end
+      end
       config
     end
 
