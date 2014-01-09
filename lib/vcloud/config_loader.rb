@@ -115,7 +115,8 @@ module Vcloud
             required: false,
             validator: :validate_vm_hardware_config,
           },
-          extra_disks: { required: false },
+          extra_disks: { type: Array, required: false, allowed_empty: false,
+            validator: :validate_vm_extra_disks },
           bootstrap:   { type: Hash, required: false, allowed_empty: false,
             validator: :validate_vm_bootstrap_config },
           metadata: {
@@ -165,6 +166,25 @@ module Vcloud
           name: { type: String, required: true, allowed_empty: false },
           ip_address: { type: String, required: false, allowed_empty: false,
             matches: /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/, },
+        }
+      }
+      check_data_against_schema(config, schema, pre)
+      config.each do |entry|
+        check_data_against_schema(entry, entry_schema, pre)
+      end
+      config
+    end
+
+    def validate_vm_extra_disks(config)
+      pre = 'ConfigLoader.validate_vm_extra_disks'
+      schema = {
+        top: { type: Array, required: true, allowed_empty: true },
+      }
+      entry_schema = {
+        top: { type: Hash, required: true, allowed_empty: false },
+        params: {
+          size: { type: String, required: true, allowed_empty: false,
+            matches: /^\d+$/, },
         }
       }
       check_data_against_schema(config, schema, pre)

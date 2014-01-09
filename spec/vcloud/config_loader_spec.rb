@@ -192,6 +192,12 @@ module Vcloud
         @cl.validate_vm_config( { bootstrap: { script_path: 'wibble' } } )
       end
 
+      it "should pass extra_disks section to validate_extra_disks" do
+        @cl.should_receive(:validate_vm_extra_disks).with([ { size: '100' } ])
+        @cl.validate_vm_config( { extra_disks: [ { size: '100' } ] } )
+
+      end
+
     end
 
     context "#validate_metadata_config" do
@@ -307,6 +313,49 @@ module Vcloud
       it "should raise an error if bootstrap contains an unexpected param" do
         expect { @cl.validate_vm_bootstrap_config({ bogus: true }) }.
           to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
+      end
+
+    end
+
+    context "#validate_vm_extra_disks" do
+      before(:each) do
+        @cl = ConfigLoader.new
+        @pre = 'ConfigLoader.validate_vm_extra_disks'
+      end
+
+      it "should raise an error if extra_disks is not an array" do
+        expect { @cl.validate_vm_extra_disks({}) }.
+          to raise_error("#{@pre}: config must be a Array")
+      end
+
+      it "should raise an error if extra_disks entry contains an unexpected param" do
+        expect { @cl.validate_vm_extra_disks([{ bogus: true }]) }.
+          to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
+      end
+
+      it "should raise an error if extra_disks entry is not a hash" do
+        expect { @cl.validate_vm_extra_disks([ 'bogus' ]) }.
+          to raise_error("#{@pre}: config must be a Hash" )
+      end
+
+      it "should raise an error if extra_disks entry :size is empty" do
+        expect { @cl.validate_vm_extra_disks([{ size: "" }]) }.
+          to raise_error("#{@pre}: size must not be empty" )
+      end
+
+      it "should raise an error if extra_disks entry :size is not a string" do
+        expect { @cl.validate_vm_extra_disks([{ size: 42 }]) }.
+          to raise_error("#{@pre}: size must be a String" )
+      end
+
+      it "should raise an error if extra_disks entry :size is not a numeric string" do
+        expect { @cl.validate_vm_extra_disks([{ size: "1024MB" }]) }.
+          to raise_error("#{@pre}: size '1024MB' is not valid")
+      end
+
+      it "should not raise an error if extra_disks entry :size is a numeric string" do
+        expect { @cl.validate_vm_extra_disks([{ size: "1024" }]) }.
+          to be_true
       end
 
     end
