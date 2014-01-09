@@ -8,34 +8,10 @@ module Vcloud
     end
 
     context "#validate_config" do
+
       before(:each) do
         @cl = ConfigLoader.new
         @pre = 'ConfigLoader.validate_config'
-        @basic_config = {
-          vapps: [
-            {
-              name:     "test-vapp-1",
-              vdc_name: "Test vDC1",
-              catalog:  'org-1-catalog',
-              catalog_item: 'org-1-template',
-            },
-          ]
-        }
-        @full_config = {
-          vapps: [
-            {
-              name:     "test-vapp-1",
-              vdc_name: "Test vDC1",
-              catalog:  'org-1-catalog',
-              catalog_item: 'org-1-template',
-              vm: {
-                network_connections: [
-                  { name: 'org-vdc-1-net-1' }
-                ]
-              },
-            },
-          ]
-        }
       end
 
       it "should raise an error if nil is provided" do
@@ -53,48 +29,96 @@ module Vcloud
           to raise_error("#{@pre}: config must be a parameter hash")
       end
 
+      it "should pass vapp section to validate_vapp_config" do
+        @cl.should_receive(:validate_vapp_config).with('wibble1')
+        @cl.should_receive(:validate_vapp_config).with('wibble2')
+        @cl.validate_config( { vapps: [ 'wibble1', 'wibble2' ] } )
+      end
+
       it "should not raise an error if no vapps are provided" do
-        expect { @cl.validate_config({ vapps: [] }) }.
+        expect { @cl.validate_app_config({ vapps: [] }) }.
           to be_true
       end
 
+    end
+
+    context "#validate_vapp_config" do
+      before(:each) do
+        @cl = ConfigLoader.new
+        @pre = 'ConfigLoader.validate_vapp_config'
+        @basic_config = {
+          name:     "test-vapp-1",
+          vdc_name: "Test vDC1",
+          catalog:  'org-1-catalog',
+          catalog_item: 'org-1-template',
+        }
+        @full_config = {
+          name:     "test-vapp-1",
+          vdc_name: "Test vDC1",
+          catalog:  'org-1-catalog',
+          catalog_item: 'org-1-template',
+          vm: {
+            network_connections: [
+              { name: 'org-vdc-1-net-1' }
+            ]
+          },
+        }
+      end
+
       it "should raise an error if nil vapp is provided" do
-        expect { @cl.validate_config({ vapps: [ nil ] }) }.
+        expect { @cl.validate_vapp_config(nil) }.
           to raise_error("#{@pre}: vapp config cannot be nil")
       end
 
       it "should raise an error if input is not a Hash" do
-        expect { @cl.validate_config({ vapps: [ 'bogus' ]}) }.
+        expect { @cl.validate_vapp_config('bogus') }.
           to raise_error("#{@pre}: vapp config must be a parameter hash")
       end
 
       it "should raise an error if empty vapp is provided" do
-        expect { @cl.validate_config({ vapps: [ {} ] }) }.
+        expect { @cl.validate_vapp_config({}) }.
           to raise_error("#{@pre}: vapp config cannot be empty")
       end
 
       ['name', 'vdc_name', 'catalog', 'catalog_item'].each do |p|
         it "should raise an error if #{p} is not specified" do
-          @basic_config[:vapps][0].delete(p.to_sym)
-          expect { @cl.validate_config(@basic_config) }.
+          @basic_config.delete(p.to_sym)
+          expect { @cl.validate_vapp_config(@basic_config) }.
             to raise_error("#{@pre}: #{p} must be specified")
         end
       end
 
       it "should not raise an error if no vm is specified" do
-        expect { @cl.validate_config(@basic_config) }.
+        expect { @cl.validate_vapp_config(@basic_config) }.
           to be_true
       end
 
+      it "should pass vm section to validate_vm_config" do
+        @basic_config[:vm] = 'wibble1'
+        @cl.should_receive(:validate_vm_config).with('wibble1')
+        @cl.validate_vapp_config( @basic_config )
+      end
+
+    end
+
+    context "#validate_vm_config" do
+      before(:each) do
+        @cl = ConfigLoader.new
+        @pre = 'ConfigLoader.validate_vm_config'
+        @config = {
+          network_connections: [
+            { name: 'org-vdc-1-net-1' }
+          ]
+        }
+      end
+
       it "should raise an error if an empty vm is specified" do
-        @basic_config[:vapps][0][:vm] = {}
-        expect { @cl.validate_config(@basic_config) }.
+        expect { @cl.validate_vm_config({}) }.
           to raise_error("#{@pre}: vm config must not be empty")
       end
 
       it "should raise an error if vm config is not a hash" do
-        @basic_config[:vapps][0][:vm] = []
-        expect { @cl.validate_config(@basic_config) }.
+        expect { @cl.validate_vm_config([]) }.
           to raise_error("#{@pre}: vm config must be a hash")
       end
 

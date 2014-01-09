@@ -28,7 +28,7 @@ module Vcloud
     end
 
     def validate_vapp_config(config)
-      pre = 'ConfigLoader.validate_config'
+      pre = 'ConfigLoader.validate_vapp_config'
       raise "#{pre}: vapp config cannot be nil" if config.nil?
       raise "#{pre}: vapp config must be a parameter hash" unless config.is_a? Hash
       raise "#{pre}: vapp config cannot be empty" if config.empty?
@@ -39,19 +39,16 @@ module Vcloud
         end
       end
 
-      if config.key?(:vm)
-        vm_config = config[:vm]
-        validate_vm_config(vm_config)
-      end
+      validate_vm_config(config[:vm]) if config.key?(:vm)
       config
     end
 
     def validate_vm_config(config)
-      pre = 'ConfigLoader.validate_config'
+      pre = 'ConfigLoader.validate_vm_config'
       raise "#{pre}: vm config must be a hash" unless config.is_a? Hash
       raise "#{pre}: vm config must not be empty" if config.empty?
       config
     end
 
-  end 
+  end
 end
