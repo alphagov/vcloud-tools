@@ -17,18 +17,8 @@ module Vcloud
       raise "#{pre}: config must be a parameter hash" unless config.is_a? Hash
       raise "#{pre}: config cannot be empty" if config.empty?
 
-      valid_parameters = [
-        :anchors,
-        :defaults,
-        :vapps,
-        :vdcs,
-        :org_vdc_networks,
-      ]
-      config.each do |k,v|
-        unless valid_parameters.include?(k)
-          raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
-        end
-      end
+      valid_parameters = [ :anchors, :defaults, :vapps, :vdcs, :org_vdc_networks, ]
+      check_for_bogus_parameters(config, valid_parameters, "#{pre}: ")
 
       if config.key?(:vapps)
         vapps = config[:vapps]
@@ -46,18 +36,8 @@ module Vcloud
       raise "#{pre}: vapp config must be a parameter hash" unless config.is_a? Hash
       raise "#{pre}: vapp config cannot be empty" if config.empty?
 
-      valid_parameters = [
-        :name,
-        :vdc_name,
-        :catalog,
-        :catalog_item,
-        :vm,
-      ]
-      config.each do |k,v|
-        unless valid_parameters.include?(k)
-          raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
-        end
-      end
+      valid_parameters = [ :name, :vdc_name, :catalog, :catalog_item, :vm, ]
+      check_for_bogus_parameters(config, valid_parameters, "#{pre}: ")
 
       [ 'name', 'vdc_name', 'catalog', 'catalog_item'].each do |p|
         unless config.key?(p.to_sym) && ! config[p.to_sym].empty?
@@ -81,11 +61,7 @@ module Vcloud
         :bootstrap,
         :metadata,
       ]
-      config.each do |k,v|
-        unless valid_parameters.include?(k)
-          raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
-        end
-      end
+      check_for_bogus_parameters(config, valid_parameters, "#{pre}: ")
       validate_metadata_config(config[:metadata]) if config.key?(:metadata)
       validate_vm_hardware_config(config[:hardware_config]) if config.key?(:hardware_config)
       config
@@ -100,16 +76,18 @@ module Vcloud
     def validate_vm_hardware_config(config)
       pre = 'ConfigLoader.validate_vm_hardware_config'
       raise "#{pre}: vm hardware_config must be a hash" unless config.is_a? Hash
-      valid_parameters = [
-        :cpu,
-        :memory,
-      ]
+      check_for_bogus_parameters(config, [ :cpu, :memory ], "#{pre}: ")
+      config
+    end
+
+    private
+
+    def check_for_bogus_parameters(config, valid_parameters, prefix = '')
       config.each do |k,v|
         unless valid_parameters.include?(k)
-          raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
+          raise "#{prefix}'#{k.to_s}' is not a valid configuration parameter"
         end
       end
-      config
     end
 
   end
