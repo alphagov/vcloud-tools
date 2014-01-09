@@ -116,7 +116,8 @@ module Vcloud
             validator: :validate_vm_hardware_config,
           },
           extra_disks: { required: false },
-          bootstrap:   { required: false },
+          bootstrap:   { type: Hash, required: false, allowed_empty: false,
+            validator: :validate_vm_bootstrap_config },
           metadata: {
             type: Hash,
             required: false,
@@ -170,6 +171,19 @@ module Vcloud
       config.each do |entry|
         check_data_against_schema(entry, entry_schema, pre)
       end
+      config
+    end
+
+    def validate_vm_bootstrap_config(config)
+      pre = 'ConfigLoader.validate_vm_bootstrap_config'
+      schema = {
+        top: { type: Hash, required: true, allowed_empty: false },
+        params: {
+          script_path: { type: String, required: false, allowed_empty: false, },
+          vars: { type: Hash, required: false, allowed_empty: true }
+        }
+      }
+      check_data_against_schema(config, schema, pre)
       config
     end
 

@@ -187,6 +187,11 @@ module Vcloud
         @cl.validate_vm_config( { network_connections: [ '1', '2' ] } )
       end
 
+      it "should pass bootstrap section to validate_vm_bootstrap_config" do
+        @cl.should_receive(:validate_vm_bootstrap_config).with({ script_path: 'wibble'})
+        @cl.validate_vm_config( { bootstrap: { script_path: 'wibble' } } )
+      end
+
     end
 
     context "#validate_metadata_config" do
@@ -288,6 +293,23 @@ module Vcloud
 
     end
 
+    context "#validate_vm_bootstrap_config" do
+      before(:each) do
+        @cl = ConfigLoader.new
+        @pre = 'ConfigLoader.validate_vm_bootstrap_config'
+      end
+
+      it "should raise an error if bootstrap is empty" do
+        expect { @cl.validate_vm_bootstrap_config({}) }.
+          to raise_error("#{@pre}: config must not be empty")
+      end
+
+      it "should raise an error if bootstrap contains an unexpected param" do
+        expect { @cl.validate_vm_bootstrap_config({ bogus: true }) }.
+          to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
+      end
+
+    end
 
     def valid_config
       {
