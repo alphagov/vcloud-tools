@@ -218,6 +218,16 @@ module Vcloud
           to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
       end
 
+      it "should raise an error if cpu is not numerical" do
+        expect { @cl.validate_vm_hardware_config({ cpu: '4 cpus'}) }.
+          to raise_error("#{@pre}: cpu '4 cpus' is not valid" )
+      end
+
+      it "should raise an error if memory is not numerical" do
+        expect { @cl.validate_vm_hardware_config({ memory: '4096 gigaboggles'}) }.
+          to raise_error("#{@pre}: memory '4096 gigaboggles' is not valid" )
+      end
+
     end
 
     context "#validate_vm_network_connections" do

@@ -143,8 +143,10 @@ module Vcloud
       schema = {
         top: { type: Hash, required: true, allowed_empty: true },
         params: {
-          cpu: { type: String, required: false, allowed_empty: false },
-          memory: { type: String, required: false, allowed_empty: false },
+          cpu: { type: String, required: false, allowed_empty: false,
+             matches: /^\d+$/ },
+          memory: { type: String, required: false, allowed_empty: false,
+             matches: /^\d+$/ },
         }
       }
       check_data_against_schema(config, schema, pre)
