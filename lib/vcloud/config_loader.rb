@@ -109,7 +109,7 @@ module Vcloud
             required: false,
             validator: :validate_vm_network_connections
           },
-          storage_profile: { required: false },
+          storage_profile: { type: String, required: false },
           hardware_config: {
             type: Hash,
             required: false,

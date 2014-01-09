@@ -162,6 +162,16 @@ module Vcloud
           to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
       end
 
+      it "should raise an error if an empty storage_profile is provided" do
+        expect { @cl.validate_vm_config({ storage_profile: "" }) }.
+          to raise_error("#{@pre}: storage_profile must not be empty")
+      end
+
+      it "should raise an error if a hash storage_profile is provided" do
+        expect { @cl.validate_vm_config({ storage_profile: {} }) }.
+          to raise_error("#{@pre}: storage_profile must be a String")
+      end
+
       it "should pass metadata section to validate_metadata_config" do
         @cl.should_receive(:validate_metadata_config).with({})
         @cl.validate_vm_config( { metadata: {} } )
