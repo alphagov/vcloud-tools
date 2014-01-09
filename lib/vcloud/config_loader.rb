@@ -199,6 +199,7 @@ module Vcloud
         top: { type: Hash, required: true, allowed_empty: false },
         params: {
           script_path: { type: String, required: false, allowed_empty: false, },
+          script_post_processor: { type: String, required: false, allowed_empty: false, },
           vars: { type: Hash, required: false, allowed_empty: true }
         }
       }
