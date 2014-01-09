@@ -137,6 +137,24 @@ module Vcloud
           to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
       end
 
+      it "should pass metadata section to validate_metadata_config" do
+        @cl.should_receive(:validate_metadata_config).with('wibble1')
+        @cl.validate_vm_config( { metadata: 'wibble1' } )
+      end
+
+    end
+
+    context "#validate_metadata_config" do
+      before(:each) do
+        @cl = ConfigLoader.new
+        @pre = 'ConfigLoader.validate_metadata_config'
+      end
+
+      it "should raise an error if metadata is not a hash" do
+        expect { @cl.validate_metadata_config([]) }.
+          to raise_error("#{@pre}: metadata config must be a hash")
+      end
+
     end
 
     it "should create a valid hash when input is JSON" do

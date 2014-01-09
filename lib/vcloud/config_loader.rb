@@ -86,6 +86,13 @@ module Vcloud
           raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
         end
       end
+      validate_metadata_config(config[:metadata]) if config.key?(:metadata)
+      config
+    end
+
+    def validate_metadata_config(config)
+      pre = 'ConfigLoader.validate_metadata_config'
+      raise "#{pre}: metadata config must be a hash" unless config.is_a? Hash
       config
     end
 
