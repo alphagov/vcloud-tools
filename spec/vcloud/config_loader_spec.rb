@@ -29,6 +29,11 @@ module Vcloud
           to raise_error("#{@pre}: config must be a parameter hash")
       end
 
+      it "should raise an error if an unexpected parameter is provided" do
+        expect { @cl.validate_config({ bogus: true }) }.
+          to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
+      end
+
       it "should pass vapp section to validate_vapp_config" do
         @cl.should_receive(:validate_vapp_config).with('wibble1')
         @cl.should_receive(:validate_vapp_config).with('wibble2')
@@ -80,6 +85,11 @@ module Vcloud
           to raise_error("#{@pre}: vapp config cannot be empty")
       end
 
+      it "should raise an error if an unexpected parameter is provided" do
+        expect { @cl.validate_vapp_config({ bogus: true }) }.
+          to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
+      end
+
       ['name', 'vdc_name', 'catalog', 'catalog_item'].each do |p|
         it "should raise an error if #{p} is not specified" do
           @basic_config.delete(p.to_sym)
@@ -120,6 +130,11 @@ module Vcloud
       it "should raise an error if vm config is not a hash" do
         expect { @cl.validate_vm_config([]) }.
           to raise_error("#{@pre}: vm config must be a hash")
+      end
+
+      it "should raise an error if an unexpected parameter is provided" do
+        expect { @cl.validate_vm_config({ bogus: true }) }.
+          to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
       end
 
     end

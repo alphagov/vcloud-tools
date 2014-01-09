@@ -17,6 +17,19 @@ module Vcloud
       raise "#{pre}: config must be a parameter hash" unless config.is_a? Hash
       raise "#{pre}: config cannot be empty" if config.empty?
 
+      valid_parameters = [
+        :anchors,
+        :defaults,
+        :vapps,
+        :vdcs,
+        :org_vdc_networks,
+      ]
+      config.each do |k,v|
+        unless valid_parameters.include?(k)
+          raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
+        end
+      end
+
       if config.key?(:vapps)
         vapps = config[:vapps]
         vapps.each do |vapp_config|
@@ -33,6 +46,19 @@ module Vcloud
       raise "#{pre}: vapp config must be a parameter hash" unless config.is_a? Hash
       raise "#{pre}: vapp config cannot be empty" if config.empty?
 
+      valid_parameters = [
+        :name,
+        :vdc_name,
+        :catalog,
+        :catalog_item,
+        :vm,
+      ]
+      config.each do |k,v|
+        unless valid_parameters.include?(k)
+          raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
+        end
+      end
+
       [ 'name', 'vdc_name', 'catalog', 'catalog_item'].each do |p|
         unless config.key?(p.to_sym) && ! config[p.to_sym].empty?
           raise "#{pre}: #{p} must be specified" unless config.key?(p.to_sym)
@@ -47,6 +73,19 @@ module Vcloud
       pre = 'ConfigLoader.validate_vm_config'
       raise "#{pre}: vm config must be a hash" unless config.is_a? Hash
       raise "#{pre}: vm config must not be empty" if config.empty?
+      valid_parameters = [
+        :network_connections,
+        :storage_profile,
+        :hardware_config,
+        :extra_disks,
+        :bootstrap,
+        :metadata,
+      ]
+      config.each do |k,v|
+        unless valid_parameters.include?(k)
+          raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
+        end
+      end
       config
     end
 
