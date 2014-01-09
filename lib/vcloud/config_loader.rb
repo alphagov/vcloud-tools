@@ -64,6 +64,8 @@ module Vcloud
       check_for_bogus_parameters(config, valid_parameters, "#{pre}: ")
       validate_metadata_config(config[:metadata]) if config.key?(:metadata)
       validate_vm_hardware_config(config[:hardware_config]) if config.key?(:hardware_config)
+      validate_vm_network_connections(
+        config[:network_connections]) if config.key?(:network_connections)
       config
     end
 
@@ -77,6 +79,26 @@ module Vcloud
       pre = 'ConfigLoader.validate_vm_hardware_config'
       raise "#{pre}: vm hardware_config must be a hash" unless config.is_a? Hash
       check_for_bogus_parameters(config, [ :cpu, :memory ], "#{pre}: ")
+      config
+    end
+
+    def validate_vm_network_connections(config)
+      pre = 'ConfigLoader.validate_vm_network_connections'
+      raise "#{pre}: vm network_connections must be an array" unless config.is_a? Array
+      config.each do |entry|
+        raise "#{pre}: each entry must be a hash" unless entry.is_a? Hash
+        check_for_bogus_parameters(entry, [ :name, :ip_address ], "#{pre}: ")
+        raise "#{pre}: each entry must have a :name" unless entry.key?(:name)
+        raise "#{pre}: each entry :name must be a string" unless 
+          entry[:name].is_a? String
+        raise "#{pre}: each entry :name must not be empty" if entry[:name].empty? 
+        if entry.key?(:ip_address)
+          ip = entry[:ip_address]
+          raise "#{pre}: :ip_address must be a string" unless ip.is_a? String
+          raise "#{pre}: :ip_address '#{ip}' is not valid" unless 
+            ip =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/
+        end
+      end
       config
     end
 

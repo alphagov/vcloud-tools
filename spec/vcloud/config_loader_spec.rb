@@ -147,6 +147,11 @@ module Vcloud
         @cl.validate_vm_config( { hardware_config: 'wibble1' } )
       end
 
+      it "should pass network_connections section to validate_vm_network_connections" do
+        @cl.should_receive(:validate_vm_network_connections).with('wibble1')
+        @cl.validate_vm_config( { network_connections: 'wibble1' } )
+      end
+
     end
 
     context "#validate_metadata_config" do
@@ -176,6 +181,64 @@ module Vcloud
       it "should raise an error if an unexpected parameter is provided" do
         expect { @cl.validate_vm_hardware_config({ bogus: true }) }.
           to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
+      end
+
+    end
+
+    context "#validate_vm_network_connections" do
+      before(:each) do
+        @cl = ConfigLoader.new
+        @pre = 'ConfigLoader.validate_vm_network_connections'
+      end
+
+      it "should raise an error if network_connections is not an array" do
+        expect { @cl.validate_vm_network_connections({}) }.
+          to raise_error("#{@pre}: vm network_connections must be an array")
+      end
+
+      it "should raise an error if network_connections entry contains an unexpected param" do
+        expect { @cl.validate_vm_network_connections([{ bogus: true }]) }.
+          to raise_error("#{@pre}: 'bogus' is not a valid configuration parameter")
+      end
+
+      it "should raise an error if network_connections entry is not a hash" do
+        expect { @cl.validate_vm_network_connections([ 'bogus' ]) }.
+          to raise_error("#{@pre}: each entry must be a hash" )
+      end
+
+      it "should raise an error if network_connections entry does not have a name" do
+        expect { @cl.validate_vm_network_connections([{ ip_address: "192.168.1.1" }]) }.
+          to raise_error("#{@pre}: each entry must have a :name" )
+      end
+
+      it "should raise an error if network_connections entry :name is empty" do
+        expect { @cl.validate_vm_network_connections([{ name: "" }]) }.
+          to raise_error("#{@pre}: each entry :name must not be empty" )
+      end
+
+      it "should raise an error if network_connections entry :name is not a string" do
+        expect { @cl.validate_vm_network_connections([{ name: 42 }]) }.
+          to raise_error("#{@pre}: each entry :name must be a string" )
+      end
+
+      it "should not raise an error if network_connections entry :ip_address is not specified" do
+        expect { @cl.validate_vm_network_connections([{ name: "valid-net-name" }]) }.
+          to be_true
+      end
+
+      it "should raise an error if :ip_address entry is not a string" do
+        expect { @cl.validate_vm_network_connections([{ name: 'valid-net-name', ip_address: 42 }]) }.
+          to raise_error("#{@pre}: :ip_address must be a string" )
+      end
+
+      it "should raise an error if :ip_address entry is specified, but empty" do
+        expect { @cl.validate_vm_network_connections([{ name: 'valid-net-name', ip_address: '' }]) }.
+          to raise_error("#{@pre}: :ip_address '' is not valid" )
+      end
+
+      it "should raise an error if :ip_address entry is not a correctly formed IP address" do
+        expect { @cl.validate_vm_network_connections([{ name: 'valid-net-name', ip_address: '1234.123.123.123' }]) }.
+          to raise_error("#{@pre}: :ip_address '1234.123.123.123' is not valid" )
       end
 
     end
