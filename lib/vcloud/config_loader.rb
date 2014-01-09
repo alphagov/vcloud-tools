@@ -183,6 +183,7 @@ module Vcloud
         params: {
           size: { type: String, required: true, allowed_empty: false,
             matches: /^\d+$/, },
+          name: { type: String, required: false, allowed_empty: false },
         }
       }
       check_data_against_schema(config, schema, pre)
