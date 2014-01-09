@@ -21,12 +21,12 @@ module Vcloud
 
       it "should raise an error if empty hash is provided" do
         expect { @cl.validate_config({}) }.
-          to raise_error("#{@pre}: config cannot be empty")
+          to raise_error("#{@pre}: config must not be empty")
       end
 
       it "should raise an error if input is not a Hash" do
         expect { @cl.validate_config([]) }.
-          to raise_error("#{@pre}: config must be a parameter hash")
+          to raise_error("#{@pre}: config must be a Hash")
       end
 
       it "should raise an error if an unexpected parameter is provided" do
@@ -72,17 +72,17 @@ module Vcloud
 
       it "should raise an error if nil vapp is provided" do
         expect { @cl.validate_vapp_config(nil) }.
-          to raise_error("#{@pre}: vapp config cannot be nil")
+          to raise_error("#{@pre}: config cannot be nil")
       end
 
       it "should raise an error if input is not a Hash" do
         expect { @cl.validate_vapp_config('bogus') }.
-          to raise_error("#{@pre}: vapp config must be a parameter hash")
+          to raise_error("#{@pre}: config must be a Hash")
       end
 
       it "should raise an error if empty vapp is provided" do
         expect { @cl.validate_vapp_config({}) }.
-          to raise_error("#{@pre}: vapp config cannot be empty")
+          to raise_error("#{@pre}: config must not be empty")
       end
 
       it "should raise an error if an unexpected parameter is provided" do
@@ -94,7 +94,7 @@ module Vcloud
         it "should raise an error if #{p} is not specified" do
           @basic_config.delete(p.to_sym)
           expect { @cl.validate_vapp_config(@basic_config) }.
-            to raise_error("#{@pre}: #{p} must be specified")
+            to raise_error("#{@pre}: #{p} is required")
         end
       end
 
@@ -104,8 +104,8 @@ module Vcloud
       end
 
       it "should pass vm section to validate_vm_config" do
-        @basic_config[:vm] = 'wibble1'
-        @cl.should_receive(:validate_vm_config).with('wibble1')
+        @basic_config[:vm] = {}
+        @cl.should_receive(:validate_vm_config).with({})
         @cl.validate_vapp_config( @basic_config )
       end
 
@@ -124,12 +124,12 @@ module Vcloud
 
       it "should raise an error if an empty vm is specified" do
         expect { @cl.validate_vm_config({}) }.
-          to raise_error("#{@pre}: vm config must not be empty")
+          to raise_error("#{@pre}: config must not be empty")
       end
 
       it "should raise an error if vm config is not a hash" do
         expect { @cl.validate_vm_config([]) }.
-          to raise_error("#{@pre}: vm config must be a hash")
+          to raise_error("#{@pre}: config must be a Hash")
       end
 
       it "should raise an error if an unexpected parameter is provided" do
@@ -138,18 +138,18 @@ module Vcloud
       end
 
       it "should pass metadata section to validate_metadata_config" do
-        @cl.should_receive(:validate_metadata_config).with('wibble1')
-        @cl.validate_vm_config( { metadata: 'wibble1' } )
+        @cl.should_receive(:validate_metadata_config).with({})
+        @cl.validate_vm_config( { metadata: {} } )
       end
 
       it "should pass hardware_config section to validate_vm_hardware_config" do
-        @cl.should_receive(:validate_vm_hardware_config).with('wibble1')
-        @cl.validate_vm_config( { hardware_config: 'wibble1' } )
+        @cl.should_receive(:validate_vm_hardware_config).with({ cpu: '2'})
+        @cl.validate_vm_config( { hardware_config: { cpu: '2' } } )
       end
 
       it "should pass network_connections section to validate_vm_network_connections" do
-        @cl.should_receive(:validate_vm_network_connections).with('wibble1')
-        @cl.validate_vm_config( { network_connections: 'wibble1' } )
+        @cl.should_receive(:validate_vm_network_connections).with(['1', '2'])
+        @cl.validate_vm_config( { network_connections: [ '1', '2' ] } )
       end
 
     end
@@ -162,7 +162,7 @@ module Vcloud
 
       it "should raise an error if metadata is not a hash" do
         expect { @cl.validate_metadata_config([]) }.
-          to raise_error("#{@pre}: metadata config must be a hash")
+          to raise_error("#{@pre}: config must be a Hash")
       end
 
     end
@@ -175,7 +175,7 @@ module Vcloud
 
       it "should raise an error if hardware_config is not a hash" do
         expect { @cl.validate_vm_hardware_config([]) }.
-          to raise_error("#{@pre}: vm hardware_config must be a hash")
+          to raise_error("#{@pre}: config must be a Hash")
       end
 
       it "should raise an error if an unexpected parameter is provided" do
@@ -193,7 +193,7 @@ module Vcloud
 
       it "should raise an error if network_connections is not an array" do
         expect { @cl.validate_vm_network_connections({}) }.
-          to raise_error("#{@pre}: vm network_connections must be an array")
+          to raise_error("#{@pre}: config must be a Array")
       end
 
       it "should raise an error if network_connections entry contains an unexpected param" do
@@ -203,22 +203,22 @@ module Vcloud
 
       it "should raise an error if network_connections entry is not a hash" do
         expect { @cl.validate_vm_network_connections([ 'bogus' ]) }.
-          to raise_error("#{@pre}: each entry must be a hash" )
+          to raise_error("#{@pre}: config must be a Hash" )
       end
 
       it "should raise an error if network_connections entry does not have a name" do
         expect { @cl.validate_vm_network_connections([{ ip_address: "192.168.1.1" }]) }.
-          to raise_error("#{@pre}: each entry must have a :name" )
+          to raise_error("#{@pre}: name is required" )
       end
 
       it "should raise an error if network_connections entry :name is empty" do
         expect { @cl.validate_vm_network_connections([{ name: "" }]) }.
-          to raise_error("#{@pre}: each entry :name must not be empty" )
+          to raise_error("#{@pre}: name must not be empty" )
       end
 
       it "should raise an error if network_connections entry :name is not a string" do
         expect { @cl.validate_vm_network_connections([{ name: 42 }]) }.
-          to raise_error("#{@pre}: each entry :name must be a string" )
+          to raise_error("#{@pre}: name must be a String" )
       end
 
       it "should not raise an error if network_connections entry :ip_address is not specified" do
@@ -228,17 +228,17 @@ module Vcloud
 
       it "should raise an error if :ip_address entry is not a string" do
         expect { @cl.validate_vm_network_connections([{ name: 'valid-net-name', ip_address: 42 }]) }.
-          to raise_error("#{@pre}: :ip_address must be a string" )
+          to raise_error("#{@pre}: ip_address must be a String" )
       end
 
       it "should raise an error if :ip_address entry is specified, but empty" do
         expect { @cl.validate_vm_network_connections([{ name: 'valid-net-name', ip_address: '' }]) }.
-          to raise_error("#{@pre}: :ip_address '' is not valid" )
+          to raise_error("#{@pre}: ip_address must not be empty")
       end
 
       it "should raise an error if :ip_address entry is not a correctly formed IP address" do
         expect { @cl.validate_vm_network_connections([{ name: 'valid-net-name', ip_address: '1234.123.123.123' }]) }.
-          to raise_error("#{@pre}: :ip_address '1234.123.123.123' is not valid" )
+          to raise_error("#{@pre}: ip_address '1234.123.123.123' is not valid" )
       end
 
     end

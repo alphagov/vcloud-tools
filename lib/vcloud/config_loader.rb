@@ -11,103 +11,172 @@ module Vcloud
       validate_config(JSON.parse(json_string, :symbolize_names => true))
     end
 
-    def validate_config(config)
-      pre = 'ConfigLoader.validate_config'
-      raise "#{pre}: config cannot be nil" if config.nil?
-      raise "#{pre}: config must be a parameter hash" unless config.is_a? Hash
-      raise "#{pre}: config cannot be empty" if config.empty?
+    def check_data_against_schema(config, schema, pre)
 
-      valid_parameters = [ :anchors, :defaults, :vapps, :vdcs, :org_vdc_networks, ]
-      check_for_bogus_parameters(config, valid_parameters, "#{pre}: ")
-
-      if config.key?(:vapps)
-        vapps = config[:vapps]
-        vapps.each do |vapp_config|
-          validate_vapp_config(vapp_config)
+      if schema.key?(:top)
+        tls = schema[:top]
+        raise "#{pre}: config cannot be nil" if config.nil? && tls[:allowed_nil] != true
+        if type = tls[:type]
+          raise "#{pre}: config must be a #{type}" unless config.is_a? type
+        end
+        unless tls[:allowed_empty] == true
+          raise "#{pre}: config must not be empty" if config.empty?
+        end
+        if schema.key?(:params) && schema[:top][:check_for_bogus_params] != false
+          check_for_bogus_parameters(config, schema[:params].keys, pre)
         end
       end
+
+      if schema.key?(:params)
+        schema[:params].each do |param,param_schema|
+          unless param_schema[:required] == false
+            raise "#{pre}: #{param} is required" unless config.key?(param)
+          end
+          if config.key?(param)
+            param_config = config[param]
+            unless param_schema[:allowed_nil] == true
+              raise "#{pre}: #{param} cannot be nil" if param_config.nil?
+            end
+            if type = param_schema[:type]
+              raise "#{pre}: #{param} must be a #{type}" unless param_config.is_a? type
+            end
+            unless param_schema[:allowed_empty] == true
+              raise "#{pre}: #{param} must not be empty" if param_config.empty?
+            end
+            if param_schema.key?(:matches) && param_config !~ param_schema[:matches]
+              raise "#{pre}: #{param} '#{param_config}' is not valid"
+            end
+            if param_schema.key?(:validator)
+              self.send(param_schema[:validator], config[param])
+            end
+          end
+        end
+      end
+
+    end
+
+    def validate_config(config)
+      pre = 'ConfigLoader.validate_config'
+      schema = {
+        top: { type: Hash, allowed_empty: false },
+        params: {
+          anchors:   { required: false, allowed_nil: true },
+          defaults:  { required: false, allowed_nil: true },
+          vapps:     { type: Array, required: false, allowed_empty: true,
+            validator: :validate_vapps_config },
+          org_vdc_networks: { type: Array, required: false, allowed_empty: true },
+          vdcs:      { type: Array, required: false, allowed_empty: true },
+        }
+      }
+
+      check_data_against_schema(config, schema, pre)
 
       config
     end
 
+    def validate_vapps_config(config)
+      config.each do |vapp_config|
+        validate_vapp_config(vapp_config)
+      end
+    end
+
     def validate_vapp_config(config)
       pre = 'ConfigLoader.validate_vapp_config'
-      raise "#{pre}: vapp config cannot be nil" if config.nil?
-      raise "#{pre}: vapp config must be a parameter hash" unless config.is_a? Hash
-      raise "#{pre}: vapp config cannot be empty" if config.empty?
-
-      valid_parameters = [ :name, :vdc_name, :catalog, :catalog_item, :vm, ]
-      check_for_bogus_parameters(config, valid_parameters, "#{pre}: ")
-
-      [ 'name', 'vdc_name', 'catalog', 'catalog_item'].each do |p|
-        unless config.key?(p.to_sym) && ! config[p.to_sym].empty?
-          raise "#{pre}: #{p} must be specified" unless config.key?(p.to_sym)
-        end
-      end
-
-      validate_vm_config(config[:vm]) if config.key?(:vm)
+      schema = {
+        top: { type: Hash, required: true, allowed_empty: false },
+        params: {
+          name:      { type: String, required: true, allowed_empty: false },
+          vdc_name:  { type: String, required: true, allowed_empty: false },
+          catalog:   { type: String, required: true, allowed_empty: false },
+          catalog_item: { type: String, required: true, allowed_empty: false },
+          vm: {
+            type: Hash, required: false, allowed_empty: true,
+            validator: :validate_vm_config,
+          },
+        }
+      }
+      check_data_against_schema(config, schema, pre)
       config
     end
 
     def validate_vm_config(config)
       pre = 'ConfigLoader.validate_vm_config'
-      raise "#{pre}: vm config must be a hash" unless config.is_a? Hash
-      raise "#{pre}: vm config must not be empty" if config.empty?
-      valid_parameters = [
-        :network_connections,
-        :storage_profile,
-        :hardware_config,
-        :extra_disks,
-        :bootstrap,
-        :metadata,
-      ]
-      check_for_bogus_parameters(config, valid_parameters, "#{pre}: ")
-      validate_metadata_config(config[:metadata]) if config.key?(:metadata)
-      validate_vm_hardware_config(config[:hardware_config]) if config.key?(:hardware_config)
-      validate_vm_network_connections(
-        config[:network_connections]) if config.key?(:network_connections)
+      schema = {
+        top: { type: Hash, required: true, allowed_empty: false },
+        params: {
+          network_connections: {
+            type: Array,
+            required: false,
+            validator: :validate_vm_network_connections
+          },
+          storage_profile: { required: false },
+          hardware_config: {
+            type: Hash,
+            required: false,
+            validator: :validate_vm_hardware_config,
+          },
+          extra_disks: { required: false },
+          bootstrap:   { required: false },
+          metadata: {
+            type: Hash,
+            required: false,
+            allowed_empty: true,
+            validator: :validate_metadata_config,
+          },
+        }
+      }
+      check_data_against_schema(config, schema, pre)
       config
     end
 
     def validate_metadata_config(config)
       pre = 'ConfigLoader.validate_metadata_config'
-      raise "#{pre}: metadata config must be a hash" unless config.is_a? Hash
+      schema = {
+        top: { type: Hash, required: true, allowed_empty: true },
+      }
+      check_data_against_schema(config, schema, pre)
       config
     end
 
     def validate_vm_hardware_config(config)
       pre = 'ConfigLoader.validate_vm_hardware_config'
-      raise "#{pre}: vm hardware_config must be a hash" unless config.is_a? Hash
-      check_for_bogus_parameters(config, [ :cpu, :memory ], "#{pre}: ")
+      schema = {
+        top: { type: Hash, required: true, allowed_empty: true },
+        params: {
+          cpu: { type: String, required: false, allowed_empty: false },
+          memory: { type: String, required: false, allowed_empty: false },
+        }
+      }
+      check_data_against_schema(config, schema, pre)
       config
     end
 
     def validate_vm_network_connections(config)
       pre = 'ConfigLoader.validate_vm_network_connections'
-      raise "#{pre}: vm network_connections must be an array" unless config.is_a? Array
+      schema = {
+        top: { type: Array, required: true, allowed_empty: true },
+      }
+      entry_schema = {
+        top: { type: Hash, required: true, allowed_empty: true },
+        params: {
+          name: { type: String, required: true, allowed_empty: false },
+          ip_address: { type: String, required: false, allowed_empty: false,
+            matches: /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/, },
+        }
+      }
+      check_data_against_schema(config, schema, pre)
       config.each do |entry|
-        raise "#{pre}: each entry must be a hash" unless entry.is_a? Hash
-        check_for_bogus_parameters(entry, [ :name, :ip_address ], "#{pre}: ")
-        raise "#{pre}: each entry must have a :name" unless entry.key?(:name)
-        raise "#{pre}: each entry :name must be a string" unless 
-          entry[:name].is_a? String
-        raise "#{pre}: each entry :name must not be empty" if entry[:name].empty? 
-        if entry.key?(:ip_address)
-          ip = entry[:ip_address]
-          raise "#{pre}: :ip_address must be a string" unless ip.is_a? String
-          raise "#{pre}: :ip_address '#{ip}' is not valid" unless 
-            ip =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/
-        end
+        check_data_against_schema(entry, entry_schema, pre)
       end
       config
     end
 
     private
 
-    def check_for_bogus_parameters(config, valid_parameters, prefix = '')
+    def check_for_bogus_parameters(config, valid_parameters, pre)
       config.each do |k,v|
         unless valid_parameters.include?(k)
-          raise "#{prefix}'#{k.to_s}' is not a valid configuration parameter"
+          raise "#{pre}: '#{k.to_s}' is not a valid configuration parameter"
         end
       end
     end
