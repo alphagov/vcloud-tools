@@ -40,10 +40,10 @@ module Vcloud
             if type = param_schema[:type]
               raise "#{pre}: #{param} must be a #{type}" unless param_config.is_a? type
             end
-            unless param_schema[:allowed_empty] == true
+            unless param_schema[:allowed_empty] == true || param_config.is_a?(Numeric)
               raise "#{pre}: #{param} must not be empty" if param_config.empty?
             end
-            if param_schema.key?(:matches) && param_config !~ param_schema[:matches]
+            if param_schema.key?(:matches) && param_config.to_s !~ param_schema[:matches]
               raise "#{pre}: #{param} '#{param_config}' is not valid"
             end
             if param_schema.key?(:validator)
@@ -145,10 +145,8 @@ module Vcloud
       schema = {
         top: { type: Hash, required: true, allowed_empty: true },
         params: {
-          cpu: { type: String, required: false, allowed_empty: false,
-             matches: /^\d+$/ },
-          memory: { type: String, required: false, allowed_empty: false,
-             matches: /^\d+$/ },
+          cpu: { required: false, matches: /^\d+$/ },
+          memory: { required: false, matches: /^\d+$/ },
         }
       }
       check_data_against_schema(config, schema, pre)
