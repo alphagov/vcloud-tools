@@ -8,7 +8,8 @@ module Vcloud
       def_delegators :@fog, :get_vapp, :organizations, :org_name, :delete_vapp, :vcloud_token, :end_point,
                      :get_execute_query, :get_vapp_metadata, :power_off_vapp, :shutdown_vapp, :session,
                      :post_instantiate_vapp_template, :put_memory, :put_cpu, :power_on_vapp, :put_vapp_metadata_value,
-                     :put_vm, :get_edge_gateway, :get_network, :delete_network, :post_create_org_vdc_network
+                     :put_vm, :get_edge_gateway, :get_network, :delete_network, :post_create_org_vdc_network,
+                     :get_org_vdc_gateways, :post_configure_edge_gateway_services
 
       #########################
       # FogFacade Inner class to represent a logic free facade over our interactions with Fog
@@ -154,10 +155,23 @@ module Vcloud
           @vcloud.get_edge_gateway(id).body
         end
 
+        def get_org_vdc_gateways(id)
+          @vcloud.get_org_vdc_gateways(id).body
+        end
+
+        def post_configure_edge_gateway_services edge_gateway_id, config
+          Vcloud.logger.info("configured edge gateway with #{edge_gateway_id}")
+          response = @vcloud.post_configure_edge_gateway_services edge_gateway_id, config
+          Vcloud.logger.info("response headers : #{JSON.pretty_generate(response.headers)}" )
+          Vcloud.logger.info("response body : #{JSON.pretty_generate(response.body)}" )
+          @vcloud.process_task(response.body)
+        end
+
         private
         def extract_id(link)
           link[:href].split('/').last
         end
+
       end
       #
       #########################
@@ -245,9 +259,25 @@ module Vcloud
         end
       end
 
+      def get_edgegateways_in_org
+        vdcs_in_current_org.collect do |vdc|
+          data = @fog.get_org_vdc_gateways(extract_id(vdc))
+          if data[:EdgeGatewayRecord]
+            data[:EdgeGatewayRecord].map do |edgeGateway|
+              get_edge_gateway(edgeGateway[:href].split('/').last)
+            end
+          end
+        end.flatten.compact
+      end
+
       private
       def extract_id(link)
         link[:href].split('/').last
+      end
+
+      def vdcs_in_current_org
+        vdc_links = org[:Link].select{ |l| l[:rel] == 'down' && l[:type] == ContentTypes::VDC }
+        vdc_links.each do |link| extract_id(link) end
       end
 
     end
