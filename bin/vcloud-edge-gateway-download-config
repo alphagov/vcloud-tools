@@ -13,15 +13,17 @@ class App
   include Vcloud
 
   main do
-    Vcloud::EdgeGatewayServices.download_config
+    Vcloud::EdgeGatewayServices.download_config(options['download-dir'])
   end
 
   on("--verbose", "Verbose output")
   on("--debug",   "Debugging output")
+  on("-d DOWNLOAD_DIR","--download-dir","Download Directory. default is ./gateways/settings")
 
 
   description '
-  vcloud-edge-gateway-configure is a command line tool, to describe and configure vCloud Shield edge gateway. It uses Fog under the hood.
+  vcloud-edge-gateway-download-config is a command line tool, to download vCloud Shield edge gateway config.
+  It uses Fog under the hood.
 
   See https://github.com/alphagov/vcloud-tools for more info'
 
