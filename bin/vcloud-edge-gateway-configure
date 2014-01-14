@@ -22,7 +22,7 @@ class App
   arg :service_to_configure, :settings_directory
 
   description '
-  vcloud-edge-gateway is a command line tool, to configure vCloud Shield edge gateway service. It uses Fog under the hood.
+  vcloud-edge-gateway-configure is a command line tool, to configure vCloud Shield edge gateway service. It uses Fog under the hood.
 
   Services that can be configured using vcloud-edge-gateway-configure are:
       firewall
