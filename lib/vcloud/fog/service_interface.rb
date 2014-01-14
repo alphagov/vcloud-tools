@@ -162,8 +162,8 @@ module Vcloud
         def post_configure_edge_gateway_services edge_gateway_id, config
           Vcloud.logger.info("configured edge gateway with #{edge_gateway_id}")
           response = @vcloud.post_configure_edge_gateway_services edge_gateway_id, config
-          Vcloud.logger.info("response headers : #{JSON.pretty_generate(response.headers)}" )
-          Vcloud.logger.info("response body : #{JSON.pretty_generate(response.body)}" )
+          Vcloud.logger.debug("response headers : #{JSON.pretty_generate(response.headers)}" )
+          Vcloud.logger.debug("response body : #{JSON.pretty_generate(response.body)}" )
           @vcloud.process_task(response.body)
         end
 
