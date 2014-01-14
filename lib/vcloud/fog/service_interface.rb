@@ -155,8 +155,8 @@ module Vcloud
           @vcloud.get_edge_gateway(id).body
         end
 
-        def get_org_vdc_gateways(id)
-          @vcloud.get_org_vdc_gateways(id).body
+        def get_org_vdc_gateways(vdc_id)
+          @vcloud.get_org_vdc_gateways(vdc_id).body
         end
 
         def post_configure_edge_gateway_services edge_gateway_id, config
