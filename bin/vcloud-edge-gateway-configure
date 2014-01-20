@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'bundler/setup'
+require 'optparse'
+require 'methadone'
+
+require 'vcloud/edge_gateway'
+
+class App
+  include Methadone::Main
+  include Methadone::CLILogging
+  include Vcloud
+
+  main do |service_to_configure, settings_directory|
+    Vcloud::EdgeGatewayServices.configure(service_to_configure, settings_directory)
+  end
+
+  on("--verbose", "Verbose output")
+  on("--debug",   "Debugging output")
+
+  arg :service_to_configure, :settings_directory
+
+  description '
+  vcloud-edge-gateway-configure is a command line tool, to configure vCloud Shield edge gateway service. It uses Fog under the hood.
+
+  Services that can be configured using vcloud-edge-gateway-configure are:
+      firewall
+      nat
+      loadbalancer
+      dhcp
+      ipsec
+
+  See https://github.com/alphagov/vcloud-tools for more info'
+
+  version Vcloud::VERSION
+
+  go!
+end
