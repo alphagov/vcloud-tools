@@ -62,6 +62,15 @@ describe Vcloud::Core::OrgVdcNetwork, :take_too_long => true do
       ]
     end
 
+    context "get_by_name_and_vdc_name" do
+      it "should load orgVdcNetwork by name & vdc_name" do
+        org_vdc_network = Vcloud::Core::OrgVdcNetwork.get_by_name_and_vdc_name(@config[:name], @config[:vdc_name])
+        expect(org_vdc_network).not_to be_nil
+        org_vdc_network.vcloud_attributes[:name] == @config[:name]
+        org_vdc_network.vcloud_attributes[:gateway] == @config[:gateway]
+      end
+    end
+
     after(:all) do
       unless ENV['VCLOUD_TOOLS_RSPEC_NO_DELETE_ORG_VDC_NETWORK']
         Vcloud::Fog::ServiceInterface.new.delete_network(@net.id) if @net
