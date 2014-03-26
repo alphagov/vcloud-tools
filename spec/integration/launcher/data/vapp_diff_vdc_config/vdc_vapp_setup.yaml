@@ -1,0 +1,6 @@
+---
+vapps:
+  - name: wibble-wobble_jonny_5
+    vdc_name: vdc
+    catalog: sausage
+    catalog_item: template

@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+
+require 'methadone'
+
+require 'vcloud/vapp_diff'
+
+class App
+  include Methadone::Main
+  include Methadone::CLILogging
+  include Vcloud
+
+  main do |vdc_name, vdc_config_dir|
+    p VappDiff.new.run(vdc_config_dir, vdc_name)
+  end
+
+  arg :vdc_name
+  arg :vdc_config_dir
+  version Vcloud::VERSION
+
+  description "
+  vcloud-vapp-diff displays the differences between a vdc's vapp config (used by vcloud-launch) and the reality in the environment
+
+  See https://github.com/alphagov/vcloud-tools for more info
+  "
+
+  go!
+end
