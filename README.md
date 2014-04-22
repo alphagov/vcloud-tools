@@ -43,10 +43,10 @@ Required set-up
 
 ## Credentials
 
-vCloud Tools is based around [fog]. To use it you'll need to give it credentials that allow it to talk to a VMware
-environment. Fog offers two ways to do this.
+vCloud Tools is based around [fog]. To use it you'll need to give it
+credentials that allow it to talk to a VMware environment.
 
-### 1. Create a `.fog` file containing your credentials
+### Step 1. Create a `.fog` file containing your credentials
 
 To use this method, you need a `.fog` file in your home directory.
 
@@ -57,7 +57,8 @@ For example:
       vcloud_director_password: 'password'
       vcloud_director_host: 'host.api.example.com'
 
-Unfortunately current usage of fog requires the password in this file. Multiple sets of credentials can be specified in the fog file, using the following format:
+Multiple sets of credentials can be specified in the fog file, using
+the following format:
 
     test:
       vcloud_director_username: 'username@org_name'
@@ -69,17 +70,29 @@ Unfortunately current usage of fog requires the password in this file. Multiple 
       vcloud_director_password: 'password'
       vcloud_director_host: 'host.api.vendor.net'
 
-You can then pass the `FOG_CREDENTIAL` environment variable at the start of your command. The value of the `FOG_CREDENTIAL` environment variable is the name of the credential set in your fog file which you wish to use.  For instance:
+You can then pass the `FOG_CREDENTIAL` environment variable at the
+start of your command. The value of the `FOG_CREDENTIAL` environment
+variable is the name of the credential set in your fog file which you
+wish to use.  For instance:
 
     FOG_CREDENTIAL=test2 bundle exec vcloud-launch node.yaml
 
-To understand more about `.fog` files, visit the 'Credentials' section here => http://fog.io/about/getting_started.html.
+The fog documentation has more details in the "Credentials" section of
+the [getting started guide](http://fog.io/about/getting_started.html).
 
-### 2. Log on externally and supply your session token
+### Step 2 (optional). Log on externally and supply your session token
 
-You can choose to log on externally by interacting independently with the API and supplying your session token to the
-tool by setting the `FOG_VCLOUD_TOKEN` ENV variable. This option reduces the risk footprint by allowing the user to
-store their credentials in safe storage. The default token lifetime is '30 minutes idle' - any activity extends the life by another 30 mins.
+Rather than specifying your password in your `.fog` file, you can
+instead log on externally with the API and supply your session token
+to the tool via the `FOG_VCLOUD_TOKEN` environment variable. This
+option reduces risk by not requiring the user's plaintext password to
+be stored on disk. Note, however, that you still need a
+`vcloud_director_password` entry in your `.fog` file; it will be ignored
+(so set it to `"FAKE"` or something like that) but fog will blow up if
+it's not present at all.
+
+The default token lifetime is '30 minutes idle' - any activity
+extends the life by another 30 mins.
 
 A basic example of this would be the following:
 
