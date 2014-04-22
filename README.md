@@ -40,9 +40,6 @@ A tool to expose the vCloud Query API, bundled with the [vCloud Core gem][vcloud
 ## [vCloud Edge Gateway][vcloud-edgegateway]
 A gem to configure a VMware vCloud Edge Gateway
 
-## [Utils][utils]
-Useful tools that are not ready for promotion into bin/ and should be considered low quality and/or in development.
-
 Required set-up
 ===============
 
