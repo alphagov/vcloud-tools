@@ -34,14 +34,11 @@ A tool that takes a YAML configuration file describing vCloud networks and confi
 ## [vCloud Walker][vcloud-walker]
 A gem that reports on the current state of an environment
 
-## [vCloud Query][vcloud-query]
+## [vCloud Query](https://github.com/alphagov/vcloud-core/blob/master/README.md#vcloud-query)
 A tool to expose the vCloud Query API, bundled with the [vCloud Core gem][vcloud-core]
 
 ## [vCloud Edge Gateway][vcloud-edgegateway]
 A gem to configure a VMware vCloud Edge Gateway
-
-## [Utils][utils]
-Useful tools that are not ready for promotion into bin/ and should be considered low quality and/or in development.
 
 Required set-up
 ===============
