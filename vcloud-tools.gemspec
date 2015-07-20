@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 1.9.3'
 
-  s.add_runtime_dependency 'vcloud-core'
+  s.add_runtime_dependency 'vcloud-core', '>= 1.1.0'
   s.add_runtime_dependency 'vcloud-edge_gateway'
   s.add_runtime_dependency 'vcloud-launcher'
   s.add_runtime_dependency 'vcloud-net_launcher'

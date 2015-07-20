@@ -1,3 +1,8 @@
+## 2.0.0 (2015-07-20)
+
+Pin to a version of vcloud-core greater than 1.1.0 to ensure we pick up a bugfix
+for `require json`.
+
 ## 1.0.0 (2014-05-19)
 
 Features:
